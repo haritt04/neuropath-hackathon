@@ -38,10 +38,10 @@ export default function RegisterMentor() {
           <div className="pt-4 flex flex-col gap-6">
             {/* Fixing button colors to match the system - standard secondary inversion */}
             <Button href="/dashboard/mentor" variant="secondary" className="w-full justify-center">
-              Request Admission
+              Register for Demo Prototype
             </Button>
             <p className="text-center text-[10px] font-black uppercase tracking-widest text-mutedForeground">
-              Verified identity? <Link href="/login" className="text-accent hover:underline">Sign In</Link>
+              Already Registered? <Link href="/login" className="text-accent hover:underline">Login</Link>
             </p>
           </div>
         </form>

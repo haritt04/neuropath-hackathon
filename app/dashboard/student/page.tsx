@@ -4,23 +4,25 @@ import React, { useState, useEffect } from 'react';
 import { 
   BarChart3, Users, Calendar, User, Sparkles, 
   Bell, MapPin, Search, ChevronRight, ArrowUpRight, 
-  ExternalLink, BrainCircuit, Globe, Filter, RefreshCw
+  ExternalLink, BrainCircuit, Globe, Filter, RefreshCw,
+  Heart, MessageSquare, Share2, LayoutDashboard
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/Button';
 
 export default function StudentDashboard() {
-  const [activeTab, setActiveTab] = useState('events');
+  const [activeTab, setActiveTab] = useState('feed');
   const [selectedCountry, setSelectedCountry] = useState('Malaysia');
   const [masScore, setMasScore] = useState(82);
   const [viewDetail, setViewDetail] = useState<any>(null); 
 
   const tabs = [
-    { id: 'events', label: 'Events Feed', icon: Calendar },
+    { id: 'feed', label: 'Social Feed', icon: LayoutDashboard },
+    { id: 'events', label: 'Events', icon: Calendar },
     { id: 'overview', label: 'Market Overview', icon: BarChart3 },
     { id: 'sessions', label: 'Alumni Network', icon: Users },
     { id: 'skills', label: 'Skills Map', icon: Sparkles },
-    { id: 'profile', label: 'Identity', icon: User },
+    { id: 'profile', label: 'Profile', icon: User },
   ];
 
   useEffect(() => {
@@ -32,7 +34,7 @@ export default function StudentDashboard() {
 
   return (
     <div className="flex min-h-screen bg-background text-foreground font-sans selection:bg-accent selection:text-white">
-      <aside className="w-20 md:w-64 border-r border-border flex flex-col p-6 sticky top-0 h-screen">
+      <aside className="w-20 md:w-64 border-r border-border flex flex-col p-6 sticky top-0 h-screen overflow-y-auto">
         <div className="mb-16 flex items-center gap-3">
           <div className="w-8 h-8 bg-accent flex items-center justify-center text-white font-bold">N</div>
           <span className="hidden md:block font-black uppercase text-xl tracking-tighter">NeuroPath</span>
@@ -59,7 +61,7 @@ export default function StudentDashboard() {
       <main className="flex-1 flex flex-col">
         <header className="border-b border-border p-6 flex justify-between items-center bg-background sticky top-0 z-10">
            <div className="flex items-center gap-3">
-              <span className="font-mono text-[10px] uppercase tracking-widest opacity-40">Section / {activeTab}</span>
+              <span className="font-mono text-[10px] uppercase tracking-widest opacity-40">Segment / Student Terminal / {activeTab}</span>
            </div>
            
            <div className="flex items-center gap-6">
@@ -67,12 +69,41 @@ export default function StudentDashboard() {
                  <Bell size={20} className="text-mutedForeground group-hover:text-accent transition-colors" />
                  <span className="absolute -top-1 -right-1 w-2 h-2 bg-accent" />
               </button>
-              <span className="font-mono text-[10px] uppercase font-bold tracking-tighter">ALEX TAN</span>
+              <span className="font-mono text-[10px] uppercase font-bold tracking-tighter">STUDENT</span>
            </div>
         </header>
 
         <div className="p-8 md:p-16 flex-1">
           <AnimatePresence mode="wait">
+            
+            {/* SOCIAL FEED */}
+            {activeTab === 'feed' && (
+              <motion.div key="feed" initial={{opacity:0, y:10}} animate={{opacity:1, y:0}} exit={{opacity:0}} className="max-w-3xl mx-auto">
+                <div className="mb-16">
+                  <h1 className="text-7xl font-black uppercase tracking-tighter leading-none mb-4">The Pulse.</h1>
+                  <p className="font-mono text-[10px] uppercase font-black text-mutedForeground tracking-widest">Mentor Guidelines & Peer Insights</p>
+                </div>
+
+                <div className="space-y-2">
+                   <SocialPost 
+                      author="Sarah Tan" role="Principal Engineer @ Grab" 
+                      content="Always build for scale from Day 1. In high-density markets like SG/KL, architectural drift happens faster than you think."
+                      likes={142} comments={28} time="42m ago" isMentor={true}
+                    />
+                   <SocialPost 
+                      author="Jason Lim" role="Student @ UM" 
+                      content="Just reached 85% MAS in Python Backend track! The suggestion to focus on AsyncIO was a game changer."
+                      likes={89} comments={12} time="2h ago" isMentor={false}
+                    />
+                   <SocialPost 
+                      author="Dato' Ismail" role="Tech Governance" 
+                      content="Industry verification for Level 2 students starts next week. Ensure your GitHub telemetry is updated."
+                      likes={305} comments={94} time="5h ago" isMentor={true}
+                    />
+                </div>
+              </motion.div>
+            )}
+
             {activeTab === 'events' && !viewDetail && (
               <motion.div key="events" initial={{opacity:0, y:10}} animate={{opacity:1, y:0}} exit={{opacity:0}} className="max-w-4xl">
                 <div className="mb-16">
@@ -109,7 +140,7 @@ export default function StudentDashboard() {
               </motion.div>
             )}
 
-            {viewDetail?.type === 'event' && (
+              {viewDetail?.type === 'event' && (
               <motion.div key="event-detail" initial={{opacity:0}} animate={{opacity:1}} className="max-w-3xl">
                 <button onClick={closeDetail} className="font-mono text-[10px] uppercase font-black text-accent mb-12 flex items-center gap-2">
                    ← Return to feed
@@ -369,6 +400,33 @@ function MetaRow({ label, value }: any) {
     <div className="flex justify-between py-2 border-b border-border">
        <span className="font-mono text-[10px] font-black uppercase text-mutedForeground">{label}</span>
        <span className="font-mono text-[10px] font-black uppercase">{value}</span>
+    </div>
+  );
+}
+
+function SocialPost({ author, role, content, likes, comments, time, isMentor }: any) {
+  return (
+    <div className="p-8 border border-border bg-background hover:border-accent transition-all group mb-6">
+       <div className="flex justify-between items-start mb-6">
+          <div className="flex gap-4 items-center">
+             <div className={`w-10 h-10 flex items-center justify-center text-xs font-black ${isMentor ? 'bg-foreground text-background' : 'bg-accent text-white'}`}>
+                {author[0]}
+             </div>
+             <div>
+                <div className="flex items-center gap-2">
+                   <span className="font-mono text-[10px] uppercase font-black tracking-widest">{author}</span>
+                   {isMentor && <span className="bg-foreground text-background text-[8px] px-1 font-black uppercase">Verified Mentor</span>}
+                </div>
+                <p className="font-mono text-[8px] text-mutedForeground uppercase tracking-[0.2em]">{role} • {time}</p>
+             </div>
+          </div>
+       </div>
+       <p className="text-xl font-medium leading-snug mb-8 uppercase italic">"{content}"</p>
+       <div className="flex gap-8 border-t border-border pt-6 font-mono text-[10px] uppercase font-black text-mutedForeground">
+          <button className="flex items-center gap-2 hover:text-accent transition-colors"><Heart size={14}/> {likes}</button>
+          <button className="flex items-center gap-2 hover:text-accent transition-colors"><MessageSquare size={14}/> {comments}</button>
+          <button className="flex items-center gap-2 hover:text-accent transition-colors"><Share2 size={14}/> Share</button>
+       </div>
     </div>
   );
 }

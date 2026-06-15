@@ -32,10 +32,10 @@ export default function RegisterStudent() {
           
           <div className="pt-4 flex flex-col gap-6">
             <Button href="/onboarding" variant="secondary" className="w-full justify-center">
-              Create Segment
+              Click Here For Demo Prototype
             </Button>
             <p className="text-center text-[10px] font-black uppercase tracking-widest text-mutedForeground">
-              Identified before? <Link href="/login" className="text-accent hover:underline">Authenticate</Link>
+              Identified before? <Link href="/login" className="text-accent hover:underline">Login</Link>
             </p>
           </div>
         </form>

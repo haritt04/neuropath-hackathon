@@ -41,10 +41,10 @@ export default function Login() {
           
           <div className="pt-4 flex flex-col gap-6">
             <Button href={tab === 'student' ? '/dashboard/student' : '/dashboard/mentor'} variant="secondary" className="w-full justify-center">
-              Authenticate
+              Login For Demo Prototype
             </Button>
             <Link href="/role-selection" className="text-center text-[10px] font-black uppercase tracking-widest text-mutedForeground hover:text-accent">
-              Request Access
+              Register New Account
             </Link>
           </div>
         </form>
