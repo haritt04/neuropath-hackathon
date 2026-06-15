@@ -1,66 +1,138 @@
+
 "use client"
-import React, { useState } from 'react';
-import { MessageSquare, X, Send, Sparkles } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { 
+  MessageSquare, X, Send, Bot, User, 
+  Terminal, Sparkles, Minus, Maximize2 
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { role: 'bot', text: 'Hi Alex! Your MAS for "Cloud Architect" is 68%. Would you like to check how to improve your alignment?' }
+    { role: 'assistant', content: 'SYSTEM INITIALIZED. I AM NEUROPATH AI. HOW CAN I ASSIST YOUR CAREER TRAJECTORY TODAY?' }
   ]);
+  const [input, setInput] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  const handleSend = () => {
+    if (!input.trim()) return;
+
+    const userMessage = { role: 'user', content: input.toUpperCase() };
+    setMessages(prev => [...prev, userMessage]);
+    setInput('');
+    setIsTyping(true);
+
+    // Simulate AI Response
+    setTimeout(() => {
+      const responses = [
+        "ANALYZING MARKET ALIGNMENT SCORE... YOUR CURRENT PROFILES SHOWS 8% DRIFT IN CLOUD INFRASTRUCTURE.",
+        "MENTOR SARAH TAN IS CURRENTLY ACTIVE. WOULD YOU LIKE TO TRIAGE A CONNECTION REQUEST?",
+        "GLOBAL HUB UPDATE: SINGAPORE TECH HUB ALPHA IS SEEING 15% INCREASE IN RUST DEMAND.",
+        "RESUME TELEMETRY RECEIVED. RECALCULATING PROJECTED SALARY INDEX FOR KUALA LUMPUR HUB.",
+        "SUGGESTION: ENROLL IN DISTRIBUTED SYSTEMS LEVEL 2 TO INCREASE MAS BY 12%."
+      ];
+      const botMessage = { 
+        role: 'assistant', 
+        content: responses[Math.floor(Math.random() * responses.length)] 
+      };
+      setMessages(prev => [...prev, botMessage]);
+      setIsTyping(false);
+    }, 1500);
+  };
 
   return (
-    <div className="fixed bottom-8 right-8 z-[100]">
+    <div className="fixed bottom-8 right-8 z-[100] font-sans">
       <AnimatePresence>
         {isOpen && (
           <motion.div 
-            initial={{ opacity: 0, y: 20, scale: 0.9 }}
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.9 }}
-            className="mb-4 w-[350px] overflow-hidden rounded-2xl border bg-white dark:bg-slate-900 shadow-2xl"
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            className="mb-6 w-[380px] h-[520px] bg-background border-2 border-foreground flex flex-col shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-hidden"
           >
-            <div className="bg-gradient-to-r from-primary to-secondary p-4 flex justify-between items-center text-white">
+            {/* Header */}
+            <div className="bg-foreground text-background p-4 flex justify-between items-center">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5" />
-                <span className="font-bold text-sm">PathFinder AI</span>
+                <Terminal size={16} />
+                <span className="font-mono text-[10px] font-black uppercase tracking-widest">NeuroPath AI / Terminal v1.0</span>
               </div>
-              <button onClick={() => setIsOpen(false)}><X className="w-5 h-5"/></button>
-            </div>
-            
-            <div className="h-80 overflow-y-auto p-4 space-y-4">
-              {messages.map((m, i) => (
-                <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`p-3 rounded-2xl text-sm max-w-[80%] ${
-                    m.role === 'user' 
-                      ? 'bg-primary text-white ml-auto rounded-tr-none' 
-                      : 'bg-slate-100 dark:bg-slate-800 rounded-tl-none text-slate-800 dark:text-slate-200'
-                  }`}>
-                    {m.text}
-                  </div>
-                </div>
-              ))}
+              <button onClick={() => setIsOpen(false)} className="hover:opacity-50 transition-opacity">
+                <X size={18} />
+              </button>
             </div>
 
-            <div className="p-4 border-t flex gap-2">
-              <input 
-                placeholder="Type here..." 
-                className="flex-1 bg-slate-50 dark:bg-slate-800 border-none outline-none rounded-lg px-3 py-2 text-sm"
-              />
-              <button className="p-2 bg-primary text-white rounded-lg"><Send className="w-4 h-4"/></button>
+            {/* Messages */}
+            <div 
+              ref={scrollRef}
+              className="flex-1 overflow-y-auto p-6 space-y-6 bg-[#0A0A0A]"
+            >
+              {messages.map((msg, i) => (
+                <div key={i} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
+                  <div className={`max-w-[85%] p-4 border ${
+                    msg.role === 'user' 
+                    ? 'bg-accent text-white border-accent' 
+                    : 'bg-muted text-foreground border-border'
+                  }`}>
+                    <p className={`font-mono text-[11px] leading-relaxed ${msg.role === 'assistant' ? 'uppercase' : ''}`}>
+                      {msg.content}
+                    </p>
+                  </div>
+                  <span className="font-mono text-[7px] uppercase mt-2 opacity-40">
+                    {msg.role === 'assistant' ? 'System_AI' : 'User_Identity'}
+                  </span>
+                </div>
+              ))}
+              {isTyping && (
+                <div className="flex items-center gap-2 text-accent">
+                  <div className="w-1 h-1 bg-accent animate-bounce" />
+                  <div className="w-1 h-1 bg-accent animate-bounce [animation-delay:0.2s]" />
+                  <div className="w-1 h-1 bg-accent animate-bounce [animation-delay:0.4s]" />
+                </div>
+              )}
+            </div>
+
+            {/* Input */}
+            <div className="p-4 border-t-2 border-foreground bg-background">
+              <div className="flex gap-2">
+                <input 
+                  type="text" 
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                  placeholder="ENTER COMMAND..."
+                  className="flex-1 bg-muted border border-border px-4 py-3 font-mono text-[10px] uppercase outline-none focus:border-accent"
+                />
+                <button 
+                  onClick={handleSend}
+                  className="w-12 bg-foreground text-background flex items-center justify-center hover:bg-accent hover:text-white transition-colors border border-foreground"
+                >
+                  <Send size={16} />
+                </button>
+              </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-      
-      <button 
+
+      {/* Toggle Button */}
+      <motion.button 
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="w-14 h-14 bg-gradient-to-tr from-primary to-secondary rounded-full shadow-lg flex items-center justify-center text-white hover:scale-110 transition-transform"
+        className={`w-16 h-16 rounded-none flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border-2 border-foreground transition-colors ${
+          isOpen ? 'bg-background text-foreground' : 'bg-accent text-white'
+        }`}
       >
-        <MessageSquare />
-        {isOpen ? null : (
-                    <span className="absolute -top-1 -right-1 bg-accent w-4 h-4 rounded-full border-2 border-white dark:border-slate-900 animate-pulse"></span>
-        )}
-      </button>
+        {isOpen ? <Minus size={24} /> : <MessageSquare size={24} />}
+      </motion.button>
     </div>
   );
 }
