@@ -13,7 +13,7 @@ export default function StudentDashboard() {
   const [activeTab, setActiveTab] = useState('events');
   const [selectedCountry, setSelectedCountry] = useState('Malaysia');
   const [masScore, setMasScore] = useState(82);
-  const [viewDetail, setViewDetail] = useState(null); // Used for event or alumni detail view
+  const [viewDetail, setViewDetail] = useState<any>(null); 
 
   const tabs = [
     { id: 'events', label: 'Events Feed', icon: Calendar },
@@ -23,7 +23,6 @@ export default function StudentDashboard() {
     { id: 'profile', label: 'Identity', icon: User },
   ];
 
-  // Logic to simulate MAS change based on country
   useEffect(() => {
     const scores: Record<string, number> = { 'Malaysia': 82, 'Singapore': 74, 'Germany': 61, 'UAE': 78 };
     setMasScore(scores[selectedCountry] || 82);
@@ -33,7 +32,6 @@ export default function StudentDashboard() {
 
   return (
     <div className="flex min-h-screen bg-background text-foreground font-sans selection:bg-accent selection:text-white">
-      {/* Side Navigation */}
       <aside className="w-20 md:w-64 border-r border-border flex flex-col p-6 sticky top-0 h-screen">
         <div className="mb-16 flex items-center gap-3">
           <div className="w-8 h-8 bg-accent flex items-center justify-center text-white font-bold">N</div>
@@ -58,9 +56,7 @@ export default function StudentDashboard() {
         </nav>
       </aside>
 
-      {/* Content Area */}
       <main className="flex-1 flex flex-col">
-        {/* Header */}
         <header className="border-b border-border p-6 flex justify-between items-center bg-background sticky top-0 z-10">
            <div className="flex items-center gap-3">
               <span className="font-mono text-[10px] uppercase tracking-widest opacity-40">Section / {activeTab}</span>
@@ -77,8 +73,6 @@ export default function StudentDashboard() {
 
         <div className="p-8 md:p-16 flex-1">
           <AnimatePresence mode="wait">
-            
-            {/* EVENTS FEED (Reddit Style) */}
             {activeTab === 'events' && !viewDetail && (
               <motion.div key="events" initial={{opacity:0, y:10}} animate={{opacity:1, y:0}} exit={{opacity:0}} className="max-w-4xl">
                 <div className="mb-16">
@@ -115,7 +109,6 @@ export default function StudentDashboard() {
               </motion.div>
             )}
 
-            {/* EVENT DETAIL VIEW */}
             {viewDetail?.type === 'event' && (
               <motion.div key="event-detail" initial={{opacity:0}} animate={{opacity:1}} className="max-w-3xl">
                 <button onClick={closeDetail} className="font-mono text-[10px] uppercase font-black text-accent mb-12 flex items-center gap-2">
@@ -148,7 +141,6 @@ export default function StudentDashboard() {
               </motion.div>
             )}
 
-            {/* MARKET OVERVIEW (MAS SCORE) */}
             {activeTab === 'overview' && (
               <motion.div key="overview" initial={{opacity:0}} animate={{opacity:1}}>
                 <div className="mb-20 flex justify-between items-end">
@@ -177,9 +169,6 @@ export default function StudentDashboard() {
                     <div className="text-[12rem] font-black tracking-tighter leading-none text-accent">
                        {masScore}<span className="text-4xl text-foreground">%</span>
                     </div>
-                    <div className="mt-12 flex gap-4">
-                       <span className="px-4 py-2 border border-border text-[10px] font-black uppercase tracking-widest">Profile Status: Observable</span>
-                    </div>
                   </div>
 
                   <div className="lg:col-span-6 space-y-12">
@@ -195,7 +184,6 @@ export default function StudentDashboard() {
               </motion.div>
             )}
 
-            {/* ALUMNI SESSIONS */}
             {activeTab === 'sessions' && !viewDetail && (
               <motion.div key="sessions" initial={{opacity:0}} animate={{opacity:1}} >
                  <div className="mb-20">
@@ -210,7 +198,6 @@ export default function StudentDashboard() {
               </motion.div>
             )}
 
-            {/* ALUMNI DETAIL + REQUEST FORM */}
             {viewDetail?.type === 'alumni' && (
               <motion.div key="alumni-detail" initial={{opacity:0}} animate={{opacity:1}} className="max-w-3xl">
                 <button onClick={closeDetail} className="font-mono text-[10px] uppercase font-black text-accent mb-12 flex items-center gap-2">
@@ -244,7 +231,6 @@ export default function StudentDashboard() {
               </motion.div>
             )}
 
-            {/* SKILLS MAP (formerly Bridge Gap) */}
             {activeTab === 'skills' && (
               <motion.div key="skills" initial={{opacity:0}} animate={{opacity:1}}>
                 <div className="mb-20">
@@ -264,17 +250,13 @@ export default function StudentDashboard() {
                           <SuggestionItem title="Kubernetes Core Patterns" provider="Professional Guild" />
                        </div>
                    </div>
-                   <div className="bg-muted/10 border border-border p-12 flex items-center justify-center">
-                       <div className="text-center font-mono opacity-20">
-                          <BrainCircuit size={150} strokeWidth={0.5} />
-                          <p className="mt-8 uppercase tracking-[0.5em] text-[10px]">Processing Telemetry</p>
-                       </div>
+                   <div className="bg-muted/10 border border-border p-12 flex items-center justify-center font-mono opacity-20">
+                       <BrainCircuit size={150} strokeWidth={0.5} />
                    </div>
                 </div>
               </motion.div>
             )}
 
-            {/* PROFILE SETTINGS */}
             {activeTab === 'profile' && (
               <motion.div key="profile" initial={{opacity:0}} animate={{opacity:1}}>
                 <div className="mb-20">
@@ -314,7 +296,6 @@ export default function StudentDashboard() {
                 </div>
               </motion.div>
             )}
-
           </AnimatePresence>
         </div>
       </main>
