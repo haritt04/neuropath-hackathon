@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Inter_Tight, Playfair_Display, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "../components/Navbar";
+import Chatbot from "@/components/Chatbot";
 
 const interTight = Inter_Tight({ 
   subsets: ["latin"], 
@@ -37,6 +38,7 @@ export default function RootLayout({
           <main className="flex-1">
             {children}
           </main>
+          <Chatbot/>
         </div>
       </body>
     </html>
