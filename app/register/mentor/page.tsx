@@ -1,60 +1,51 @@
+
 "use client"
+import React from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
-import { Briefcase, Mail, Lock, ShieldCheck } from 'lucide-react';
+import { Button } from '@/components/Button';
+import { ShieldCheck } from 'lucide-react';
 
 export default function RegisterMentor() {
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-slate-50 dark:bg-[#020617]">
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="glass w-full max-w-md rounded-[2.5rem] p-10 shadow-2xl"
-      >
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-secondary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <Briefcase className="text-secondary w-8 h-8" />
+    <div className="min-h-screen flex items-center justify-center p-6 bg-background">
+      <div className="w-full max-w-md">
+        <div className="mb-12 text-center md:text-left">
+          <div className="w-12 h-12 bg-white inline-flex items-center justify-center mb-8">
+            <ShieldCheck className="text-background w-6 h-6" />
           </div>
-          <h1 className="text-3xl font-black">Mentor Sign Up</h1>
-          <p className="text-slate-500 text-sm mt-2 font-medium">Empower the next generation of talent</p>
+          <h1 className="text-5xl font-black uppercase tracking-tighter leading-none mb-4">Validate<br/>Authority.</h1>
+          <p className="font-mono text-[10px] uppercase font-black text-mutedForeground tracking-widest">Industry Professional Verification</p>
         </div>
 
-        <form className="space-y-5">
-           <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-400 uppercase ml-1">Professional Email</label>
-            <div className="relative">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-              <input type="email" placeholder="sarah@corp.com" className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-secondary/50 transition-all font-medium" />
-            </div>
+        <form className="space-y-8">
+          <div className="space-y-2">
+            <label className="text-[10px] font-black uppercase tracking-widest text-mutedForeground">Full Name</label>
+            <input type="text" placeholder="NAME / IDENTIFIER" className="w-full px-4 py-4 bg-muted border border-border outline-none focus:border-accent text-white font-mono text-sm uppercase placeholder:opacity-20" />
           </div>
-
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-400 uppercase ml-1">LinkedIn Profile URL</label>
-            <div className="relative">
-              <ShieldCheck className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-              <input type="url" placeholder="linkedin.com/in/sarah" className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-secondary/50 transition-all font-medium" />
-            </div>
+          <div className="space-y-2">
+            <label className="text-[10px] font-black uppercase tracking-widest text-mutedForeground">Organization Email</label>
+            <input type="email" placeholder="NAME@CORP-ENTITY.COM" className="w-full px-4 py-4 bg-muted border border-border outline-none focus:border-accent text-white font-mono text-sm uppercase placeholder:opacity-20" />
           </div>
-
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-400 uppercase ml-1">Password</label>
-            <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-              <input type="password" placeholder="••••••••" className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-secondary/50 transition-all font-medium" />
-            </div>
+          <div className="space-y-2">
+            <label className="text-[10px] font-black uppercase tracking-widest text-mutedForeground">LinkedIn Authority URL</label>
+            <input type="url" placeholder="LINKEDIN.COM/IN/IDENTITY" className="w-full px-4 py-4 bg-muted border border-border outline-none focus:border-accent text-white font-mono text-sm placeholder:opacity-20" />
           </div>
-
-          <Link href="/dashboard/mentor" className="block w-full pt-4">
-            <button type="button" className="w-full py-4 bg-secondary text-white rounded-2xl font-black shadow-lg shadow-secondary/30 hover:scale-[1.02] active:scale-[0.98] transition-all">
-              Professional Sign Up
-            </button>
-          </Link>
-
-          <p className="text-center text-sm text-slate-500 font-medium">
-            Account verified via LinkedIn <Link href="/login" className="text-secondary font-black hover:underline ml-1">Sign In</Link>
-          </p>
+          <div className="space-y-2">
+            <label className="text-[10px] font-black uppercase tracking-widest text-mutedForeground">Access Code</label>
+            <input type="password" placeholder="••••••••" className="w-full px-4 py-4 bg-muted border border-border outline-none focus:border-accent text-white font-mono text-sm placeholder:opacity-20" />
+          </div>
+          
+          <div className="pt-4 flex flex-col gap-6">
+            {/* Fixing button colors to match the system - standard secondary inversion */}
+            <Button href="/dashboard/mentor" variant="secondary" className="w-full justify-center">
+              Request Admission
+            </Button>
+            <p className="text-center text-[10px] font-black uppercase tracking-widest text-mutedForeground">
+              Verified identity? <Link href="/login" className="text-accent hover:underline">Sign In</Link>
+            </p>
+          </div>
         </form>
-      </motion.div>
+      </div>
     </div>
   );
 }

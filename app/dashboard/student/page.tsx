@@ -1,180 +1,320 @@
+
 "use client"
-import React, { useState } from 'react';
-import MarketTicker from "../../../components/MarketTicker";
+import React, { useState, useEffect } from 'react';
 import { 
   BarChart3, Users, Calendar, User, Sparkles, 
-  MapPin, Clock, ArrowUpRight, CheckCircle2, 
-  BookOpen, ExternalLink, ShieldAlert
+  Bell, MapPin, Search, ChevronRight, ArrowUpRight, 
+  ExternalLink, BrainCircuit, Globe, Filter, RefreshCw
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Button } from '@/components/Button';
 
 export default function StudentDashboard() {
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState('events');
+  const [selectedCountry, setSelectedCountry] = useState('Malaysia');
+  const [masScore, setMasScore] = useState(82);
+  const [viewDetail, setViewDetail] = useState(null); // Used for event or alumni detail view
 
   const tabs = [
+    { id: 'events', label: 'Events Feed', icon: Calendar },
     { id: 'overview', label: 'Market Overview', icon: BarChart3 },
-    { id: 'sessions', label: 'Alumni Sessions', icon: Users },
-    { id: 'events', label: 'Events', icon: Calendar },
-    { id: 'bridge', label: 'Bridge the Gap', icon: Sparkles },
-    { id: 'profile', label: 'Profile', icon: User },
+    { id: 'sessions', label: 'Alumni Network', icon: Users },
+    { id: 'skills', label: 'Skills Map', icon: Sparkles },
+    { id: 'profile', label: 'Identity', icon: User },
   ];
 
+  // Logic to simulate MAS change based on country
+  useEffect(() => {
+    const scores: Record<string, number> = { 'Malaysia': 82, 'Singapore': 74, 'Germany': 61, 'UAE': 78 };
+    setMasScore(scores[selectedCountry] || 82);
+  }, [selectedCountry]);
+
+  const closeDetail = () => setViewDetail(null);
+
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-[#020617] text-slate-900 dark:text-slate-100 italic md:not-italic">
+    <div className="flex min-h-screen bg-background text-foreground font-sans selection:bg-accent selection:text-white">
       {/* Side Navigation */}
-      <aside className="w-20 md:w-64 border-r border-slate-200 dark:border-slate-800 flex flex-col p-4 bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl">
-        <div className="mb-8 px-2 flex items-center gap-2">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold">N</div>
-          <span className="hidden md:block font-bold text-lg tracking-tighter">NeuroPath</span>
+      <aside className="w-20 md:w-64 border-r border-border flex flex-col p-6 sticky top-0 h-screen">
+        <div className="mb-16 flex items-center gap-3">
+          <div className="w-8 h-8 bg-accent flex items-center justify-center text-white font-bold">N</div>
+          <span className="hidden md:block font-black uppercase text-xl tracking-tighter">NeuroPath</span>
         </div>
         
-        <nav className="flex-1 space-y-2">
+        <nav className="flex-1 space-y-4">
           {tabs.map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${
+              onClick={() => { setActiveTab(tab.id); closeDetail(); }}
+              className={`w-full flex items-center gap-4 py-3 px-2 transition-all ${
                 activeTab === tab.id 
-                ? 'bg-primary text-white shadow-lg shadow-primary/20' 
-                : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800'
+                ? 'text-accent border-l-2 border-accent' 
+                : 'text-mutedForeground hover:text-foreground opacity-50 hover:opacity-100'
               }`}
             >
-              <tab.icon size={20} />
-              <span className="hidden md:block font-bold text-sm tracking-tight">{tab.label}</span>
+              <tab.icon size={20} strokeWidth={1.5} />
+              <span className="hidden md:block font-black uppercase text-[10px] tracking-widest">{tab.label}</span>
             </button>
           ))}
         </nav>
       </aside>
 
       {/* Content Area */}
-      <main className="flex-1 overflow-y-auto">
-        <MarketTicker mode="student" />
-        <div className="p-6 md:p-10">
+      <main className="flex-1 flex flex-col">
+        {/* Header */}
+        <header className="border-b border-border p-6 flex justify-between items-center bg-background sticky top-0 z-10">
+           <div className="flex items-center gap-3">
+              <span className="font-mono text-[10px] uppercase tracking-widest opacity-40">Section / {activeTab}</span>
+           </div>
+           
+           <div className="flex items-center gap-6">
+              <button className="relative group">
+                 <Bell size={20} className="text-mutedForeground group-hover:text-accent transition-colors" />
+                 <span className="absolute -top-1 -right-1 w-2 h-2 bg-accent" />
+              </button>
+              <span className="font-mono text-[10px] uppercase font-bold tracking-tighter">ALEX TAN</span>
+           </div>
+        </header>
+
+        <div className="p-8 md:p-16 flex-1">
           <AnimatePresence mode="wait">
+            
+            {/* EVENTS FEED (Reddit Style) */}
+            {activeTab === 'events' && !viewDetail && (
+              <motion.div key="events" initial={{opacity:0, y:10}} animate={{opacity:1, y:0}} exit={{opacity:0}} className="max-w-4xl">
+                <div className="mb-16">
+                  <h1 className="text-7xl font-black uppercase tracking-tighter leading-none mb-4">Network Feed.</h1>
+                  <p className="font-mono text-[10px] uppercase font-black text-mutedForeground tracking-widest">Global Hub Announcements & Job Telemetry</p>
+                </div>
+
+                <div className="space-y-6">
+                   <EventPost 
+                      author="Dato' Ismail" 
+                      title="Tech Talent Summit: Mapping Asian Hubs in 2026" 
+                      date="2h ago" 
+                      comments={12} 
+                      tag="Live Event"
+                      onClick={() => setViewDetail({ type: 'event', id: 1, title: 'Tech Talent Summit 2026' })}
+                    />
+                   <EventPost 
+                      author="Sarah Tan" 
+                      title="Skill Drift Alert: Cloud Engineering in SG now requires Rust proficiency" 
+                      date="5h ago" 
+                      comments={48} 
+                      tag="Critical"
+                      onClick={() => setViewDetail({ type: 'event', id: 2, title: 'Skill Drift Update' })}
+                    />
+                   <EventPost 
+                      author="Grab Engineering" 
+                      title="Opening: 12 Backend Positions for NeuroPath Verified MAS (90%+)" 
+                      date="1d ago" 
+                      comments={106} 
+                      tag="Opportunity"
+                      onClick={() => setViewDetail({ type: 'event', id: 3, title: 'Grab Hiring Event' })}
+                    />
+                </div>
+              </motion.div>
+            )}
+
+            {/* EVENT DETAIL VIEW */}
+            {viewDetail?.type === 'event' && (
+              <motion.div key="event-detail" initial={{opacity:0}} animate={{opacity:1}} className="max-w-3xl">
+                <button onClick={closeDetail} className="font-mono text-[10px] uppercase font-black text-accent mb-12 flex items-center gap-2">
+                   ← Return to feed
+                </button>
+                <div className="mb-12 border-b-2 border-accent pb-8">
+                   <span className="font-mono text-[10px] font-black uppercase text-mutedForeground tracking-widest block mb-4">Event Details</span>
+                   <h2 className="text-6xl font-black uppercase tracking-tighter leading-none">{viewDetail.title}</h2>
+                </div>
+                <div className="space-y-8 mb-16">
+                   <p className="text-2xl font-medium leading-snug">
+                     This event is part of the Talentbank Career OS Hackathon 2026, aimed at redefining how professionals in Asia are observed and managed within the global economy. 
+                   </p>
+                   <ul className="space-y-2 font-mono text-xs uppercase tracking-widest">
+                      <li>Location: Kuala Lumpur Convention Centre</li>
+                      <li>Capacity: 200 Verified MAS Participants</li>
+                      <li>Timezone: GMT+8</li>
+                   </ul>
+                </div>
+                <div className="p-12 bg-muted/30 border border-border">
+                   <h4 className="text-xl font-bold uppercase mb-8">Registration Form</h4>
+                   <form className="space-y-6" onSubmit={(e)=>e.preventDefault()}>
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black uppercase font-mono">Current MAS: {masScore}%</label>
+                         <input type="text" readOnly value="ALEX TAN / #NP-10293" className="w-full bg-background/50 border border-border p-4 text-xs font-mono" />
+                      </div>
+                      <Button variant="secondary" className="w-full justify-center">Submit Participation Request</Button>
+                   </form>
+                </div>
+              </motion.div>
+            )}
+
+            {/* MARKET OVERVIEW (MAS SCORE) */}
             {activeTab === 'overview' && (
-              <motion.div key="overview" initial={{opacity:0, y:10}} animate={{opacity:1, y:0}} exit={{opacity:0}}>
-                <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4 text-left">
-                  <div>
-                    <h1 className="text-3xl font-black">Student Dashboard</h1>
-                    <p className="text-slate-500 font-medium">Monitoring your Market Alignment Score (MAS)</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <div className="glass px-4 py-2 rounded-xl flex items-center gap-2 text-xs font-bold border-green-500/20 text-green-500">
-                      <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                      Live Telemetry
+              <motion.div key="overview" initial={{opacity:0}} animate={{opacity:1}}>
+                <div className="mb-20 flex justify-between items-end">
+                   <div>
+                     <h1 className="text-7xl font-black uppercase tracking-tighter leading-none mb-4">Market Radar.</h1>
+                     <p className="font-mono text-[10px] uppercase font-black text-mutedForeground tracking-widest">Profiling Alignment Score [MAS]</p>
+                   </div>
+                   <div className="flex gap-4 items-center">
+                      <Filter size={14} className="text-mutedForeground" />
+                      <select 
+                        value={selectedCountry}
+                        onChange={(e) => setSelectedCountry(e.target.value)}
+                        className="bg-transparent border-b border-border font-mono text-xs font-black uppercase outline-none py-2"
+                      >
+                         <option>Malaysia</option>
+                         <option>Singapore</option>
+                         <option>Germany</option>
+                         <option>UAE</option>
+                      </select>
+                   </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                  <div className="lg:col-span-6 border-t-4 border-accent p-12 bg-muted/20 relative overflow-hidden group">
+                    <h3 className="font-mono text-[10px] font-black uppercase text-mutedForeground tracking-widest mb-12">Live Alignment in {selectedCountry}</h3>
+                    <div className="text-[12rem] font-black tracking-tighter leading-none text-accent">
+                       {masScore}<span className="text-4xl text-foreground">%</span>
+                    </div>
+                    <div className="mt-12 flex gap-4">
+                       <span className="px-4 py-2 border border-border text-[10px] font-black uppercase tracking-widest">Profile Status: Observable</span>
                     </div>
                   </div>
-                </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                  <div className="lg:col-span-1 glass p-8 rounded-[2.5rem] flex flex-col items-center justify-center text-center">
-                    <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Market Alignment Score</h3>
-                    <div className="text-8xl font-black gradient-text">82%</div>
-                    <div className="mt-4 px-4 py-1 bg-green-500/10 text-green-500 rounded-full text-[10px] font-black uppercase tracking-widest">Strong Match</div>
-                    <p className="mt-6 text-sm text-slate-500 leading-relaxed italic font-medium">
-                      Your skills currently align with major tech hubs in <b>Kuala Lumpur</b> and <b>Singapore</b>.
-                    </p>
-                  </div>
-
-                  <div className="lg:col-span-2 glass p-8 rounded-[2.5rem] text-left">
-                    <h3 className="font-bold mb-6 flex items-center gap-2"><Sparkles className="w-4 h-4 text-primary"/> Skill Telemetry</h3>
-                    <div className="space-y-6">
-                      <SkillProgress label="Python (Backend)" score={90} color="bg-primary" />
-                      <SkillProgress label="Cloud Systems" score={65} color="bg-secondary" />
-                      <SkillProgress label="Problem Solving" score={85} color="bg-accent" />
-                      <SkillProgress label="Market Context" score={40} color="bg-orange-500" />
+                  <div className="lg:col-span-6 space-y-12">
+                    <div className="border-b border-border pb-8">
+                       <h4 className="text-2xl font-bold uppercase mb-4 tracking-tighter">Skill Telemetry</h4>
+                       <p className="text-sm text-mutedForeground">Market specific benchmarks for {selectedCountry}</p>
                     </div>
+                    <SkillBlock label="Cloud Infrastructure" score={masScore - 5} color="bg-accent" />
+                    <SkillBlock label="Backend Security" score={95} color="bg-foreground" />
+                    <SkillBlock label="Regional Cultural Context" score={masScore + 10} color="bg-mutedForeground" />
                   </div>
                 </div>
               </motion.div>
             )}
 
-            {activeTab === 'sessions' && (
-              <motion.div key="sessions" initial={{opacity:0, x:10}} animate={{opacity:1, x:0}} exit={{opacity:0}} className="text-left">
-                <h1 className="text-3xl font-black mb-8">Alumni Sessions</h1>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <SessionCard 
-                    name="Dato' Ismail" mentorType="Senior Cloud Architect @ AWS" 
-                    time="Thu, 18 June - 10:00 AM" status="Available" 
-                  />
-                  <SessionCard 
-                    name="Sarah Tan" mentorType="Principal Engineer @ Grab" 
-                    time="Fri, 19 June - 3:00 PM" status="Limited Seats" 
-                  />
-                  <SessionCard 
-                    name="Amirul Hafez" mentorType="Data Head @ Petronas" 
-                    time="Sat, 20 June - 11:00 AM" status="Fully Booked" 
-                  />
+            {/* ALUMNI SESSIONS */}
+            {activeTab === 'sessions' && !viewDetail && (
+              <motion.div key="sessions" initial={{opacity:0}} animate={{opacity:1}} >
+                 <div className="mb-20">
+                   <h1 className="text-7xl font-black uppercase tracking-tighter leading-none mb-4">The Network.</h1>
+                   <p className="font-mono text-[10px] uppercase font-black text-mutedForeground tracking-widest">Connect with Industry verified professionals</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-border border border-border">
+                   <AlumniCard name="Sarah Tan" company="Grab SG" role="Principal Engineer" onClick={() => setViewDetail({ type: 'alumni', title: 'Sarah Tan' })} />
+                   <AlumniCard name="Amirul Hafez" company="Petronas" role="Data Lead" onClick={() => setViewDetail({ type: 'alumni', title: 'Amirul Hafez' })} />
+                   <AlumniCard name="Dato' Ismail" company="Tech Hub" role="Director" onClick={() => setViewDetail({ type: 'alumni', title: "Dato' Ismail" })} />
                 </div>
               </motion.div>
             )}
 
-            {activeTab === 'events' && (
-              <motion.div key="events" initial={{opacity:0, x:10}} animate={{opacity:1, x:0}} exit={{opacity:0}} className="text-left">
-                <h1 className="text-3xl font-black mb-8">Upcoming Events</h1>
-                <div className="space-y-4">
-                  <EventItem 
-                    title="Tech Talent Summit 2026" 
-                    location="Kuala Lumpur Convention Centre" 
-                    date="25 June 2026" type="Career Fair" 
-                  />
-                  <EventItem 
-                    title="NeuroPath Networking Night" 
-                    location="Virtual / Zoom" 
-                    date="02 July 2026" type="Networking" 
-                  />
+            {/* ALUMNI DETAIL + REQUEST FORM */}
+            {viewDetail?.type === 'alumni' && (
+              <motion.div key="alumni-detail" initial={{opacity:0}} animate={{opacity:1}} className="max-w-3xl">
+                <button onClick={closeDetail} className="font-mono text-[10px] uppercase font-black text-accent mb-12 flex items-center gap-2">
+                   ← All Professionals
+                </button>
+                <div className="flex gap-8 items-start mb-16">
+                   <div className="w-24 h-24 bg-accent flex items-center justify-center text-4xl">👤</div>
+                   <div>
+                      <h2 className="text-6xl font-black uppercase tracking-tighter leading-none mb-2">{viewDetail.title}</h2>
+                      <p className="font-mono text-[10px] uppercase font-black text-accent tracking-[0.3em]">Verified Senior Mentor</p>
+                   </div>
+                </div>
+                <div className="p-12 border border-border bg-muted/10">
+                   <h4 className="text-xl font-bold uppercase mb-8">Request Connection</h4>
+                   <form className="space-y-6">
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black uppercase font-mono">Objective</label>
+                         <select className="w-full bg-background border border-border p-4 text-xs font-mono uppercase">
+                            <option>Career Navigation</option>
+                            <option>Technical Alignment</option>
+                            <option>Role Referral</option>
+                         </select>
+                      </div>
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black uppercase font-mono">Message Context</label>
+                         <textarea placeholder="DESCRIBE YOUR GOAL..." className="w-full bg-background border border-border p-4 text-xs font-mono h-32 uppercase"></textarea>
+                      </div>
+                      <Button variant="secondary" className="w-full justify-center">Submit Mentor Request</Button>
+                   </form>
                 </div>
               </motion.div>
             )}
 
-            {activeTab === 'bridge' && (
-              <motion.div key="bridge" initial={{opacity:0, scale:0.98}} animate={{opacity:1, scale:1}} exit={{opacity:0}} className="text-left">
-                <div className="mb-8">
-                  <h1 className="text-3xl font-black flex items-center gap-3">Bridge the Gap <ShieldAlert className="text-orange-500" /></h1>
-                  <p className="text-slate-500 font-medium">Personalized recommendations for <b>Semi-Aligned</b> skills.</p>
+            {/* SKILLS MAP (formerly Bridge Gap) */}
+            {activeTab === 'skills' && (
+              <motion.div key="skills" initial={{opacity:0}} animate={{opacity:1}}>
+                <div className="mb-20">
+                   <h1 className="text-7xl font-black uppercase tracking-tighter leading-none mb-4">Skills Map.</h1>
+                   <p className="font-mono text-[10px] uppercase font-black text-mutedForeground tracking-widest">AI Assisted Proficiency Benchmark for {selectedCountry}</p>
                 </div>
-                
-                <div className="bg-orange-500/5 border border-orange-500/20 rounded-[2rem] p-8 mb-8">
-                  <h3 className="text-orange-600 dark:text-orange-400 font-black mb-2 uppercase text-xs tracking-widest">Skill Drift Detected</h3>
-                  <p className="text-sm font-medium">Your <b>Cloud Computing</b> score is 65%. Most employers in Malaysia are looking for 80%+. Bridge this 15% gap to unlock 12 new job matches.</p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <RecommendationCard 
-                    title="AWS Certified Solutions Architect" 
-                    provider="Amazon / HRDC Claimable" 
-                    impact="+12% MAS Boost"
-                  />
-                  <RecommendationCard 
-                    title="Distributed Systems Bootcamp" 
-                    provider="NeuroPath Alumni" 
-                    impact="+8% MAS Boost"
-                  />
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                   <div className="space-y-8">
+                       <h3 className="text-xs font-mono font-black uppercase border-b-2 border-accent pb-2 inline-block">Regional Deficits</h3>
+                       <div className="p-8 bg-accent/5 border border-accent/20">
+                          <p className="text-xl font-medium leading-snug">
+                             In <span className="font-bold underline">{selectedCountry}</span>, employers are currently shifting away from monolithic architectures. Your telemetry shows a <span className="text-accent font-black">12% gap</span> in Distributed Systems.
+                          </p>
+                       </div>
+                       <div className="space-y-4">
+                          <SuggestionItem title="Rust Programming for Cloud" provider="Hub Learning" />
+                          <SuggestionItem title="Kubernetes Core Patterns" provider="Professional Guild" />
+                       </div>
+                   </div>
+                   <div className="bg-muted/10 border border-border p-12 flex items-center justify-center">
+                       <div className="text-center font-mono opacity-20">
+                          <BrainCircuit size={150} strokeWidth={0.5} />
+                          <p className="mt-8 uppercase tracking-[0.5em] text-[10px]">Processing Telemetry</p>
+                       </div>
+                   </div>
                 </div>
               </motion.div>
             )}
 
+            {/* PROFILE SETTINGS */}
             {activeTab === 'profile' && (
-              <motion.div key="profile" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="text-left">
-                <h1 className="text-3xl font-black mb-8">Profile Settings</h1>
-                <div className="glass p-10 rounded-[2.5rem] max-w-2xl">
-                  <div className="flex items-center gap-6 mb-10">
-                    <div className="w-24 h-24 bg-primary/20 rounded-3xl flex items-center justify-center text-4xl">🎓</div>
-                    <div>
-                      <h2 className="text-2xl font-bold">Alex Tan</h2>
-                      <p className="text-slate-500">Student ID: #NP-10293</p>
-                    </div>
-                  </div>
-                  <div className="space-y-6">
-                    <div className="grid grid-cols-2 gap-4">
-                      <ProfileField label="Primary Market" value="Malaysia / Singapore" />
-                      <ProfileField label="Language" value="English / Malay" />
-                    </div>
-                    <button className="w-full py-4 bg-slate-900 border border-slate-700 dark:bg-white text-white dark:text-black rounded-2xl font-bold transition-all hover:opacity-90">Save Preferences</button>
-                  </div>
+              <motion.div key="profile" initial={{opacity:0}} animate={{opacity:1}}>
+                <div className="mb-20">
+                   <h1 className="text-7xl font-black uppercase tracking-tighter leading-none mb-4">Identity.</h1>
+                   <p className="font-mono text-[10px] uppercase font-black text-mutedForeground tracking-widest">Account Configuration & Profile Assets</p>
+                </div>
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+                   <div className="lg:col-span-7 space-y-12">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                         <div className="space-y-2">
+                            <label className="font-mono text-[10px] font-black uppercase text-mutedForeground">Display Name</label>
+                            <input className="w-full bg-muted border border-border p-4 text-xs font-mono focus:border-accent outline-none" defaultValue="ALEX TAN" />
+                         </div>
+                         <div className="space-y-2">
+                            <label className="font-mono text-[10px] font-black uppercase text-mutedForeground">Email Registry</label>
+                            <input className="w-full bg-muted border border-border p-4 text-xs font-mono focus:border-accent outline-none" defaultValue="ALEX@CAMPUS.EDU.MY" />
+                         </div>
+                      </div>
+                      <div className="space-y-4 pt-12 border-t border-border">
+                         <h4 className="text-xs font-mono font-black uppercase">Asset Recalculation</h4>
+                         <p className="text-sm text-mutedForeground mb-6">Submitting new CV or Github data will re-trigger the AI Matching Engine.</p>
+                         <div className="p-8 border border-border border-dashed flex justify-between items-center group hover:border-accent transition-colors cursor-pointer">
+                            <span className="font-black uppercase text-xs">Drop New Telemetry Files...</span>
+                            <RefreshCw size={16} className="group-hover:rotate-180 transition-transform duration-500" />
+                         </div>
+                         <Button variant="secondary" className="w-full justify-center">Recalculate AI Alignment Score</Button>
+                      </div>
+                   </div>
+                   <div className="lg:col-span-5 border-l border-border pl-12">
+                      <h4 className="text-xs font-mono font-black uppercase mb-8">Metadata</h4>
+                      <div className="space-y-6">
+                         <MetaRow label="Observation Date" value="15 JUN 2026" />
+                         <MetaRow label="Verification Status" value="LEVEL 2" />
+                         <MetaRow label="Active Hub" value={selectedCountry} />
+                      </div>
+                   </div>
                 </div>
               </motion.div>
             )}
+
           </AnimatePresence>
         </div>
       </main>
@@ -182,83 +322,72 @@ export default function StudentDashboard() {
   );
 }
 
-function SkillProgress({ label, score, color }: any) {
+function EventPost({ author, title, date, comments, tag, onClick }: any) {
   return (
-    <div className="space-y-2">
+    <div onClick={onClick} className="p-8 border border-border bg-background hover:border-accent transition-all cursor-pointer group">
+       <div className="flex justify-between items-start mb-6">
+          <div className="flex gap-3 items-center">
+             <div className="w-6 h-6 bg-muted flex items-center justify-center text-[10px] font-black">?</div>
+             <span className="font-mono text-[10px] uppercase font-black">{author}</span>
+             <span className="font-mono text-[10px] text-mutedForeground">• {date}</span>
+          </div>
+          <span className="px-2 py-0.5 border border-border text-[8px] font-black uppercase tracking-widest">{tag}</span>
+       </div>
+       <h3 className="text-3xl font-black uppercase tracking-tighter leading-none mb-6 group-hover:text-accent transition-colors">{title}</h3>
+       <div className="flex gap-6 font-mono text-[10px] uppercase font-black text-mutedForeground">
+          <span>{comments} Comments</span>
+          <span>Share</span>
+       </div>
+    </div>
+  );
+}
+
+function AlumniCard({ name, company, role, onClick }: any) {
+  return (
+    <div onClick={onClick} className="bg-background p-10 hover:bg-accent hover:text-white transition-all group cursor-pointer">
+       <div className="w-12 h-12 border border-border group-hover:border-white flex items-center justify-center mb-8">
+          <User size={20} />
+       </div>
+       <h4 className="text-3xl font-black uppercase tracking-tighter leading-none mb-4">{name}</h4>
+       <p className="font-mono text-[10px] uppercase font-black tracking-widest opacity-60 mb-8">{role} @ {company}</p>
+       <div className="flex items-center gap-2 font-black uppercase tracking-widest text-[10px]">
+          Request Terminal Link <ArrowUpRight className="w-4 h-4" />
+       </div>
+    </div>
+  );
+}
+
+function SkillBlock({ label, score, color }: any) {
+  return (
+    <div className="space-y-4">
       <div className="flex justify-between items-end">
-        <span className="font-bold text-sm tracking-tight">{label}</span>
-        <span className="text-xs font-black opacity-60 tracking-widest">{score}%</span>
+        <span className="font-black uppercase text-xs tracking-widest">{label}</span>
+        <span className="font-mono text-[10px] font-black">{score}%</span>
       </div>
-      <div className="h-3 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-        <motion.div 
-          initial={{width:0}} animate={{width: `${score}%`}}
-          className={`h-full ${color}`}
-        />
+      <div className="h-1 w-full bg-muted">
+        <motion.div initial={{width:0}} animate={{width: `${score}%`}} className={`h-full ${color}`} />
       </div>
     </div>
   );
 }
 
-function SessionCard({ name, mentorType, time, status }: any) {
+function SuggestionItem({ title, provider }: any) {
   return (
-    <div className="glass p-6 rounded-3xl group hover:border-primary/50 transition-all text-left">
-      <div className="flex justify-between items-start mb-4">
-        <div className="w-12 h-12 bg-slate-200 dark:bg-slate-800 rounded-2xl flex items-center justify-center text-xl">👤</div>
-        <span className={`text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest ${status === 'Available' ? 'bg-accent/10 text-accent' : 'bg-orange-500/10 text-orange-500'}`}>
-          {status}
-        </span>
-      </div>
-      <h3 className="font-black text-lg">{name}</h3>
-      <p className="text-xs text-slate-500 mb-6 font-medium tracking-tight h-8">{mentorType}</p>
-      <div className="flex items-center gap-2 text-xs font-bold text-slate-400 mb-6 uppercase tracking-wider">
-        <Clock size={14} /> {time}
-      </div>
-      <button className="w-full py-3 bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white rounded-xl font-black transition-all">
-        Book Session
-      </button>
+    <div className="p-6 border border-border flex justify-between items-center group hover:border-accent cursor-pointer transition-all">
+       <div>
+          <h4 className="font-black uppercase text-sm">{title}</h4>
+          <p className="font-mono text-[10px] uppercase text-mutedForeground tracking-widest">Provider: {provider}</p>
+       </div>
+       <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
     </div>
   );
 }
 
-function EventItem({ title, location, date, type }: any) {
+function MetaRow({ label, value }: any) {
   return (
-    <div className="glass p-6 rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-4 text-left">
-      <div>
-        <div className="text-[10px] font-black text-primary uppercase mb-1 tracking-[0.2em]">{type}</div>
-        <h3 className="font-black text-xl tracking-tight">{title}</h3>
-        <div className="flex items-center gap-4 mt-2 text-slate-500 text-xs font-bold uppercase">
-          <span className="flex items-center gap-1"><MapPin size={14}/> {location}</span>
-          <span className="flex items-center gap-1"><Calendar size={14}/> {date}</span>
-        </div>
-      </div>
-      <button className="px-8 py-3 bg-slate-900 border border-slate-700 dark:bg-white text-white dark:text-black rounded-xl font-bold flex items-center gap-2 hover:scale-105 transition-transform">
-        Register <ArrowUpRight size={18}/>
-      </button>
-    </div>
-  );
-}
-
-function RecommendationCard({ title, provider, impact }: any) {
-  return (
-    <div className="glass p-8 rounded-[2rem] border-primary/10 hover:border-primary/40 transition-all cursor-pointer group text-left">
-      <div className="w-10 h-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center mb-4">
-        <BookOpen size={20} />
-      </div>
-      <h3 className="font-black text-xl mb-1 tracking-tight">{title}</h3>
-      <p className="text-sm text-slate-500 mb-6 font-medium italic">{provider}</p>
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-black text-accent tracking-widest uppercase">{impact}</span>
-        <ExternalLink size={16} className="text-slate-400 group-hover:text-primary transition-colors" />
-      </div>
-    </div>
-  );
-}
-
-function ProfileField({ label, value }: any) {
-  return (
-    <div className="space-y-1">
-      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{label}</label>
-      <div className="p-4 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold border border-transparent hover:border-slate-300 dark:hover:border-slate-600 transition-all">{value}</div>
+    <div className="flex justify-between py-2 border-b border-border">
+       <span className="font-mono text-[10px] font-black uppercase text-mutedForeground">{label}</span>
+       <span className="font-mono text-[10px] font-black uppercase">{value}</span>
     </div>
   );
 }
